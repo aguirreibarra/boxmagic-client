@@ -1,0 +1,14 @@
+.venv/
+.pytest_cache/
+.ruff_cache/
+__pycache__/
+*.py[cod]
+*.egg-info/
+dist/
+build/
+.coverage
+.DS_Store
+
+# Private API credentials and generated request-signing keys.
+.env
+llavero.json
