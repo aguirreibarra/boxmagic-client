@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
 from boxmagic_client import InstanceKey, ReservationRequest
 
@@ -32,7 +32,7 @@ def test_reservation_request_matches_web_payload_shape() -> None:
         lugar_id="seat-1",
         acepta_lista_de_espera=True,
         acepta_cualquier_lugar=True,
-        fecha_limite_espera=datetime(2026, 4, 22, 13, 30, tzinfo=timezone.utc),
+        fecha_limite_espera=datetime(2026, 4, 22, 13, 30, tzinfo=UTC),
     )
 
     assert request.to_api_payload() == {
