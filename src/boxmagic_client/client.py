@@ -166,7 +166,7 @@ class BoxmagicClient:
 
     def __init__(
         self,
-        token: str,
+        token: str | None = None,
         *,
         gym_id: str | None = None,
         api_base_url: str = DEFAULT_API_BASE_URL,
@@ -177,10 +177,8 @@ class BoxmagicClient:
         timeout: float = 20.0,
         transport: httpx.BaseTransport | None = None,
     ) -> None:
-        """Create a client with a Bearer token and optional default gym ID."""
+        """Create a client with an optional Bearer token and default gym ID."""
 
-        if not token:
-            raise ValueError("A Boxmagic Bearer token is required.")
         root_url = api_base_url.rstrip("/")
         if root_url.endswith("/boxmagic"):
             root_url = root_url[: -len("/boxmagic")]
@@ -381,6 +379,8 @@ class BoxmagicClient:
         body_for_signature: JsonValue = json if json is not None else {}
         request_headers = self._base_headers(gym_id=gym_id)
         if auth:
+            if not self.token:
+                raise ValueError("An active Boxmagic Bearer token is required for authenticated requests.")
             request_headers["Authorization"] = f"Bearer {self.token}"
         if self.sign_requests:
             request_headers["signatura"] = self._sign_body(body_for_signature)

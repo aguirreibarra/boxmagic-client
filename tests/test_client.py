@@ -199,6 +199,33 @@ def test_signed_requests_can_emulate_shifted_client_clock(monkeypatch: pytest.Mo
     assert payload["iat"] == 1_800_000_000 + 86_400 - 10
 
 
+def test_client_without_token_fails_auth_requests_but_allows_public_requests() -> None:
+    """A client initialized without a token should allow public requests but fail auth requests."""
+
+    captured: list[httpx.Request] = []
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        captured.append(request)
+        return httpx.Response(200, json={"ok": True})
+
+    client = BoxmagicClient(
+        token=None,
+        gym_id="gym-1",
+        sign_requests=False,
+        transport=httpx.MockTransport(handler),
+    )
+
+    # Public request should succeed
+    assert client.get_app_info()["ok"] is True
+    assert len(captured) == 1
+    assert captured[0].url.path == "/boxmagic/app/info"
+    assert "authorization" not in captured[0].headers
+
+    # Authenticated request should raise ValueError
+    with pytest.raises(ValueError, match="Bearer token is required"):
+        client.get_profile()
+
+
 def _decode_jwt_payload(token: str) -> dict[str, Any]:
     """Decode an unsigned JWT payload for request-shape assertions."""
 
