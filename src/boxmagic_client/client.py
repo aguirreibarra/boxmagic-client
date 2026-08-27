@@ -380,7 +380,9 @@ class BoxmagicClient:
         request_headers = self._base_headers(gym_id=gym_id)
         if auth:
             if not self.token:
-                raise ValueError("An active Boxmagic Bearer token is required for authenticated requests.")
+                raise ValueError(
+                    "An active Boxmagic Bearer token is required for authenticated requests."
+                )
             request_headers["Authorization"] = f"Bearer {self.token}"
         if self.sign_requests:
             request_headers["signatura"] = self._sign_body(body_for_signature)
